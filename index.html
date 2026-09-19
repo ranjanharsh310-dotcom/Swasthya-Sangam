@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swasthya Sangam - Smart India Hackathon 2026 | Team Naag Shakti</title>
+  
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet Map API CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       Main Application Shell
+       ========================================================================= -->
+  <div id="app-container">
+
+    <!-- Desktop Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand-badge">
+        <div class="brand-logo-icon">⚡</div>
+        <div class="brand-info">
+          <h2>Swasthya</h2>
+          <span>SIH 2026 • PS 26196</span>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li class="nav-item active" data-tab="home">
+          <span class="nav-icon">🏠</span>
+          <span>Home</span>
+        </li>
+        <li class="nav-item" data-tab="learning">
+          <span class="nav-icon">📚</span>
+          <span>Learning</span>
+        </li>
+        <li class="nav-item" data-tab="chat">
+          <span class="nav-icon">💬</span>
+          <span>Chat</span>
+        </li>
+        <li class="nav-item" data-tab="search">
+          <span class="nav-icon">🔍</span>
+          <span>Search</span>
+        </li>
+        <li class="nav-item" data-tab="profile">
+          <span class="nav-icon">👤</span>
+          <span>Profile</span>
+        </li>
+      </ul>
+
+      <!-- User Status Widget in Sidebar -->
+      <div class="sidebar-user" onclick="App.switchTab('profile')">
+        <img id="sidebar-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Avatar" class="user-avatar">
+        <div class="sidebar-user-details">
+          <h4 id="sidebar-user-name">Arjun Verma</h4>
+          <p id="sidebar-user-level">Intermediate Calisthenics</p>
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <button class="btn-logout" style="width: 100%; justify-content: center;" onclick="App.logout()">
+          🚪 Log Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-item active" data-tab="home">
+        <span class="nav-icon" style="font-size: 1.3rem;">🏠</span>
+        <span>Home</span>
+      </div>
+      <div class="bottom-nav-item" data-tab="learning">
+        <span class="nav-icon" style="font-size: 1.3rem;">📚</span>
+        <span>Learning</span>
+      </div>
+      <div class="bottom-nav-item" data-tab="chat">
+        <span class="nav-icon" style="font-size: 1.3rem;">💬</span>
+        <span>Chat</span>
+      </div>
+      <div class="bottom-nav-item" data-tab="search">
+        <span class="nav-icon" style="font-size: 1.3rem;">🔍</span>
+        <span>Search</span>
+      </div>
+      <div class="bottom-nav-item" data-tab="profile">
+        <span class="nav-icon" style="font-size: 1.3rem;">👤</span>
+        <span>Profile</span>
+      </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="main-wrapper">
+
+      <!-- Top Header -->
+      <header class="top-header">
+        <!-- Top Left Action: Personal Fitness Routine -->
+        <button class="btn btn-secondary header-action-btn" onclick="App.openRoutineModal()">
+          <span>⚡</span>
+          <span>Personal Fitness Routine</span>
+        </button>
+
+        <!-- Prominently Centered Brand Name -->
+        <div class="header-brand-center">
+          <div class="header-brand-title text-gradient">
+            Swasthya Sangam
+          </div>
+          <div class="header-subtag">Fitness • Sports • Community</div>
+        </div>
+
+        <!-- Top Right Action: Community Matchmaker & Logout -->
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="btn btn-primary header-action-btn" onclick="App.switchTab('community')">
+            <span>🤝</span>
+            <span>Community</span>
+          </button>
+          <button class="btn-logout" onclick="App.logout()" title="Log out and switch account">
+            <span>🚪</span>
+            <span>Logout</span>
+          </button>
+          <span id="backend-status-pill" style="font-size: 0.72rem; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-light);">
+            ● Checking...
+          </span>
+        </div>
+      </header>
+
+      <!-- Page Containers -->
+      <div class="page-container">
+
+        <!-- ===================================================================
+             SCREEN 1: HOME PAGE (DASHBOARD)
+             =================================================================== -->
+        <section id="screen-home" class="screen-view active">
+          
+          <!-- Welcome Hero Banner -->
+          <div class="hero-welcome-banner glass-panel">
+            <div class="welcome-text">
+              <h1>Welcome Back, <span id="welcome-user-name" class="text-gradient">Arjun</span>! 👋</h1>
+              <p>Turn bodyweight training into daily missions. Ready to conquer today's goals?</p>
+            </div>
+            <div class="streak-pill" id="dashboard-streak-count">
+              🔥 8 Days Streak
+            </div>
+          </div>
+
+          <!-- Dashboard Core Stats Grid -->
+          <div class="dashboard-grid">
+            
+            <!-- Daily Steps Counter (Progress Circle) -->
+            <div class="steps-widget glass-panel">
+              <div class="section-title" style="width: 100%; justify-content: space-between;">
+                <span>👟 Daily Steps</span>
+                <span id="dashboard-xp-count" style="font-size: 0.85rem; color: var(--neon-green);">1,450 XP</span>
+              </div>
+
+              <div class="progress-circle-container">
+                <svg class="progress-svg" viewBox="0 0 200 200">
+                  <defs>
+                    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#22c55e" />
+                      <stop offset="100%" stop-color="#06b6d4" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Background Ring -->
+                  <circle class="progress-bg" cx="100" cy="100" r="90" />
+                  <!-- Animated Progress Ring -->
+                  <circle id="step-progress-svg-circle" class="progress-bar" cx="100" cy="100" r="90" />
+                </svg>
+                <div class="circle-content">
+                  <span class="step-count" id="dashboard-step-count">7,420</span>
+                  <span class="step-goal" id="dashboard-step-goal">Goal: 10,000 steps</span>
+                </div>
+              </div>
+
+              <button class="btn btn-secondary" style="font-size: 0.82rem; padding: 6px 14px; margin-top: 4px;" onclick="DashboardModule.addQuickSteps(500)">
+                +500 Steps (Sensor Sync)
+              </button>
+            </div>
+
+            <!-- Heart Rate & Workout Stats Widgets -->
+            <div class="metrics-widget">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Live Heart Rate</span>
+                  <div class="metric-icon-box icon-heart">❤️</div>
+                </div>
+                <div class="metric-value" id="metric-heart-rate">74 BPM</div>
+                <div style="font-size: 0.74rem; color: var(--neon-green);">● Resting in Normal Zone</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Active Calories</span>
+                  <div class="metric-icon-box icon-calorie">🔥</div>
+                </div>
+                <div class="metric-value" id="metric-calories">520 kcal</div>
+                <div style="font-size: 0.74rem; color: var(--text-secondary);">Target: 600 kcal</div>
+              </div>
+
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-label">Workout Time</span>
+                  <div class="metric-icon-box icon-clock">⏱️</div>
+                </div>
+                <div class="metric-value" id="metric-time">48 mins</div>
+                <div style="font-size: 0.74rem; color: var(--electric-cyan);">+12 mins vs yesterday</div>
+              </div>
+            </div>
+
+            <!-- Streak System & Leaderboard -->
+            <div class="streak-leaderboard-section glass-panel">
+              <div class="section-header-row">
+                <h3 class="section-title">🏆 National College Leaderboard</h3>
+                <span style="font-size: 0.78rem; color: var(--text-secondary);">Updated hourly</span>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 14px;">
+                Points awarded for consistency, completed daily missions, and sports matchmaking.
+              </p>
+              <div class="leaderboard-list" id="leaderboard-list-container">
+                <!-- Injected by dashboard.js -->
+              </div>
+            </div>
+
+            <!-- Fitness Tournaments / Challenges Card -->
+            <div class="tournament-section glass-panel">
+              <div class="section-header-row">
+                <h3 class="section-title">⚡ Active Tournaments</h3>
+                <span class="skill-tag" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-gold);">Fit India</span>
+              </div>
+              <div id="dashboard-tournaments-container">
+                <!-- Injected by dashboard.js -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Certificates & Rewards Section -->
+          <div class="glass-panel" style="padding: 24px; margin-top: 24px;">
+            <div class="section-header-row">
+              <h3 class="section-title">🎖️ Milestone Badges & Official Certificates</h3>
+              <span style="font-size: 0.82rem; color: var(--neon-green);">Click any unlocked badge to view certificate</span>
+            </div>
+            <div class="badges-container" id="dashboard-badges-container">
+              <!-- Injected by dashboard.js -->
+            </div>
+          </div>
+
+        </section>
+
+
+        <!-- ===================================================================
+             SCREEN 2: LEARNING PAGE
+             =================================================================== -->
+        <section id="screen-learning" class="screen-view">
+          <div class="glass-panel" style="padding: 24px; margin-bottom: 24px;">
+            <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 8px;">
+              📖 Sports, Bodyweight Exercises & Yoga Mastery
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+              Master correct technique, biomechanical rules, and beginner instructions without any expensive equipment.
+            </p>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="learning-filter-row">
+            <button class="learning-filter-btn active" onclick="LearningModule.filterCategory('All', this)">All Disciplines</button>
+            <button class="learning-filter-btn" onclick="LearningModule.filterCategory('Bodyweight Fitness', this)">💪 Bodyweight Fitness</button>
+            <button class="learning-filter-btn" onclick="LearningModule.filterCategory('Yoga & Mindfulness', this)">🧘 Yoga & Mindfulness</button>
+            <button class="learning-filter-btn" onclick="LearningModule.filterCategory('Sports Learning', this)">⚽ Sports Skills</button>
+          </div>
+
+          <!-- Cards Grid -->
+          <div class="learning-grid" id="learning-grid-container">
+            <!-- Injected by learning.js -->
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
+             SCREEN 3: CHAT PAGE
+             =================================================================== -->
+        <section id="screen-chat" class="screen-view">
+          <div class="chat-container-layout glass-panel">
+            
+            <!-- Left Contacts Sidebar -->
+            <div class="chat-contacts-sidebar">
+              <div class="chat-contacts-header">
+                <h3 style="font-size: 1.05rem; font-weight: 700;">💬 Connected Buddies</h3>
+                <span style="font-size: 0.74rem; color: var(--text-secondary);">Authorized sports connections</span>
+              </div>
+              <div class="chat-contacts-list" id="chat-contacts-list">
+                <!-- Injected by chat.js -->
+              </div>
+            </div>
+
+            <!-- Main Chat Messages Area -->
+            <div class="chat-main-area">
+              <div class="chat-active-header">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <img id="chat-active-avatar" src="" alt="Avatar" class="contact-avatar">
+                  <div>
+                    <h4 id="chat-active-name" style="font-weight: 700; font-size: 1.05rem;">Rohan Kulkarni</h4>
+                    <p id="chat-active-status" style="font-size: 0.76rem; color: var(--neon-green);">Calisthenics • Online</p>
+                  </div>
+                </div>
+                <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="App.openRoutineModal()">
+                  Plan Workout
+                </button>
+              </div>
+
+              <!-- Message History Scroll -->
+              <div class="chat-messages-scroll" id="chat-messages-container">
+                <!-- Injected by chat.js -->
+              </div>
+
+              <!-- Quick Workout Invitation Chips -->
+              <div class="chat-quick-invites">
+                <span class="quick-invite-chip" onclick="ChatModule.sendQuickInvite('run')">🏃 6 AM Sunrise Run?</span>
+                <span class="quick-invite-chip" onclick="ChatModule.sendQuickInvite('turf')">⚽ Turf Football Match?</span>
+                <span class="quick-invite-chip" onclick="ChatModule.sendQuickInvite('pushup')">💪 100 Pushup Challenge?</span>
+                <span class="quick-invite-chip" onclick="ChatModule.sendQuickInvite('yoga')">🧘 Weekend Surya Namaskar?</span>
+              </div>
+
+              <!-- Chat Input Bar -->
+              <form class="chat-input-bar" onsubmit="event.preventDefault(); ChatModule.sendMessage(document.getElementById('chat-input-field').value); document.getElementById('chat-input-field').value = '';">
+                <input type="text" id="chat-input-field" class="chat-text-input" placeholder="Type a message or workout invite..." autocomplete="off">
+                <button type="submit" class="btn btn-primary" style="padding: 0 20px;">
+                  Send
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
+             SCREEN 4: SEARCH & EXPLORE PAGE
+             =================================================================== -->
+        <section id="screen-search" class="screen-view">
+          
+          <div class="search-hero-box glass-panel">
+            <h2 style="font-size: 1.7rem; font-weight: 800; margin-bottom: 6px;">
+              🔍 Discover Skills, Sports & Nearby Athletes
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+              Explore hundreds of calisthenics tutorials, yoga asanas, and local training partners.
+            </p>
+
+            <div class="search-input-wrapper">
+              <span class="search-icon-inside">🔍</span>
+              <input type="text" id="main-search-input" class="search-input-field" placeholder="Search exercises, sports, or partners (e.g. Pushup, Yoga, Football)..." oninput="SearchModule.handleInput(this.value)">
+            </div>
+
+            <!-- Explore Chips -->
+            <div class="explore-chips-row">
+              <span class="explore-chip active" onclick="SearchModule.selectChip('All', this)">All Categories</span>
+              <span class="explore-chip" onclick="SearchModule.selectChip('Calisthenics', this)">💪 Calisthenics</span>
+              <span class="explore-chip" onclick="SearchModule.selectChip('Yoga', this)">🧘 Yoga & Breathwork</span>
+              <span class="explore-chip" onclick="SearchModule.selectChip('Football', this)">⚽ Football</span>
+              <span class="explore-chip" onclick="SearchModule.selectChip('Running', this)">🏃 Running & Cardio</span>
+              <span class="explore-chip" onclick="SearchModule.selectChip('Badminton', this)">🏸 Badminton</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Search Results -->
+          <div id="search-results-container">
+            <!-- Injected by search.js -->
+          </div>
+
+        </section>
+
+
+        <!-- ===================================================================
+             SCREEN 5: PROFILE PAGE
+             =================================================================== -->
+        <section id="screen-profile" class="screen-view">
+          <div class="profile-layout-grid">
+            
+            <!-- Left User Summary Card -->
+            <div class="profile-card-left glass-panel">
+              <img id="profile-view-avatar" src="" alt="Avatar" class="profile-big-avatar">
+              <h2 id="profile-view-name" style="font-size: 1.4rem; font-weight: 800; margin-bottom: 2px;">Arjun Verma</h2>
+              <p id="profile-view-email" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 12px;">arjun.fitness@swasthya.in</p>
+              
+              <span id="profile-view-level" class="skill-tag" style="background: rgba(34, 197, 94, 0.15); color: var(--neon-green); font-weight: 700; padding: 6px 14px; font-size: 0.85rem;">
+                Intermediate Calisthenics
+              </span>
+
+              <div class="profile-main-stats">
+                <div class="profile-stat-box">
+                  <h4 id="profile-view-bmi" style="color: var(--electric-cyan);">22.6</h4>
+                  <span>BMI (Healthy)</span>
+                </div>
+                <div class="profile-stat-box">
+                  <h4 id="profile-view-streak" style="color: var(--flame-orange);">8 Days</h4>
+                  <span>Active Streak</span>
+                </div>
+                <div class="profile-stat-box">
+                  <h4 id="profile-view-xp" style="color: var(--neon-green);">1,450</h4>
+                  <span>Fit XP</span>
+                </div>
+              </div>
+
+              <div style="width: 100%; text-align: left; margin-top: 14px;">
+                <h4 style="font-size: 0.92rem; font-weight: 700; margin-bottom: 8px;">Sports & Skills</h4>
+                <div id="profile-skills-tags" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                  <!-- Injected by app.js -->
+                </div>
+              </div>
+
+              <button class="btn btn-secondary" style="width: 100%; margin-top: 24px;" onclick="App.openAuthModal()">
+                Switch / Re-login User
+              </button>
+            </div>
+
+            <!-- Right Profile Edit & Achievements Section -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+              
+              <!-- Profile Form -->
+              <div class="glass-panel" style="padding: 28px;">
+                <div class="section-header-row">
+                  <h3 class="section-title">✏️ Edit Fitness Profile & Metrics</h3>
+                  <span style="font-size: 0.78rem; color: var(--text-secondary);">Updates BMI & AI routine splits</span>
+                </div>
+
+                <form id="profile-edit-form">
+                  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                    <div class="form-group">
+                      <label class="form-label">Full Name</label>
+                      <input type="text" id="prof-name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Email ID</label>
+                      <input type="email" id="prof-email" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Date of Birth</label>
+                      <input type="date" id="prof-dob" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Age</label>
+                      <input type="number" id="prof-age" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Weight (kg)</label>
+                      <input type="number" id="prof-weight" step="0.1" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Height (cm)</label>
+                      <input type="number" id="prof-height" step="0.1" class="form-control" required>
+                    </div>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%;">
+                    Save Updated Metrics & Recalculate BMI
+                  </button>
+                </form>
+              </div>
+
+              <!-- Interactive Hobbies & Sports Activities Manager -->
+              <div class="glass-panel" style="padding: 28px;">
+                <div class="section-header-row">
+                  <h3 class="section-title">🎯 Manage My Hobbies & Sports Activities</h3>
+                  <span style="font-size: 0.78rem; color: var(--neon-green);">Dynamic Matchmaking & Routine</span>
+                </div>
+                <p style="font-size: 0.84rem; color: var(--text-secondary); margin-bottom: 12px;">
+                  Your selected activities determine which workout splits are generated and which sports buddies match with you. Click any active tag to remove it:
+                </p>
+
+                <!-- Currently Selected Tags -->
+                <div id="profile-skills-tags" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                  <!-- Injected by app.js -->
+                </div>
+
+                <!-- Quick Add Popular Sports -->
+                <div style="margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 14px;">
+                  <h5 style="font-size: 0.82rem; color: var(--electric-cyan); margin-bottom: 8px; font-weight: 700;">+ Quick Add Other Disciplines:</h5>
+                  <div id="profile-quick-add-skills" style="display: flex; flex-wrap: wrap; gap: 6px;">
+                    <!-- Injected by app.js -->
+                  </div>
+                </div>
+
+                <!-- Custom Activity Input -->
+                <div style="margin-top: 16px;">
+                  <h5 style="font-size: 0.82rem; color: var(--amber-gold); margin-bottom: 6px; font-weight: 700;">+ Add Your Custom Sport or Fitness Hobby:</h5>
+                  <div class="custom-skill-adder">
+                    <input type="text" id="profile-custom-skill-input" placeholder="e.g. Boxing, Parkour, Gymnastics, Rowing...">
+                    <button type="button" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.82rem;" onclick="App.addProfileCustomSkill()">
+                      + Add Hobby
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Profile Badges & Trophies -->
+              <div class="glass-panel" style="padding: 28px;">
+                <div class="section-header-row">
+                  <h3 class="section-title">🏆 Unlocked Achievements & Badges</h3>
+                  <span style="font-size: 0.8rem; color: var(--amber-gold);">Fit India Certified</span>
+                </div>
+                <div class="badges-container" id="profile-badges-container">
+                  <!-- Injected by app.js -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- ===================================================================
+             SCREEN 6: COMMUNITY MATCHMAKING VIEW
+             =================================================================== -->
+        <section id="screen-community" class="screen-view">
+          <div class="community-header-banner glass-panel">
+            <div>
+              <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 6px;">
+                🤝 Community Matchmaking & Sports Buddies
+              </h2>
+              <p style="color: var(--text-secondary); font-size: 0.92rem;">
+                Find nearby students and athletes who share your exact sports, calisthenics, or yoga interests.
+              </p>
+            </div>
+            <button class="btn btn-primary" onclick="CommunityModule.initMap()">
+              📍 Refresh Map Pins
+            </button>
+          </div>
+
+          <!-- Interactive Leaflet Map API Container -->
+          <div class="map-container-wrapper glass-panel">
+            <div id="community-map"></div>
+          </div>
+
+          <!-- Filter by Sport -->
+          <div style="display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px;">
+            <button class="day-tab-btn active" onclick="CommunityModule.filterBySport('All')">All Sports</button>
+            <button class="day-tab-btn" onclick="CommunityModule.filterBySport('Football')">⚽ Football</button>
+            <button class="day-tab-btn" onclick="CommunityModule.filterBySport('Calisthenics')">💪 Calisthenics</button>
+            <button class="day-tab-btn" onclick="CommunityModule.filterBySport('Yoga')">🧘 Yoga</button>
+            <button class="day-tab-btn" onclick="CommunityModule.filterBySport('Running')">🏃 Running</button>
+            <button class="day-tab-btn" onclick="CommunityModule.filterBySport('Badminton')">🏸 Badminton</button>
+          </div>
+
+          <!-- Matching Athletes Cards Grid -->
+          <div class="partners-grid" id="partners-grid-container">
+            <!-- Injected by community.js -->
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL 1: PERSONAL FITNESS ROUTINE (AI Generated Split)
+       ========================================================================= -->
+  <div class="modal-backdrop" id="routine-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800;" class="text-gradient">⚡ AI Personal Fitness Routine</h3>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">100% Equipment-Free Bodyweight & Calisthenics Plan</p>
+        </div>
+        <button class="close-modal-btn" onclick="App.closeModals()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Goal Selector Form -->
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 10px;">Select Your Target Fitness Goal:</h4>
+        <div class="routine-goal-selector">
+          <div class="goal-option-card selected" data-goal="Calisthenics Strength & Core">
+            <strong style="color: var(--neon-green);">💪 Calisthenics Strength & Core</strong>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">Master pushups, handstands, hollow bodies & explosive power.</p>
+          </div>
+          <div class="goal-option-card" data-goal="Fat Loss & High-Energy HIIT">
+            <strong style="color: var(--flame-orange);">🔥 Fat Loss & High-Energy HIIT</strong>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">Torch maximum calories with bodyweight intervals & cardio.</p>
+          </div>
+          <div class="goal-option-card" data-goal="Yoga, Mobility & Mental Focus">
+            <strong style="color: var(--electric-cyan);">🧘 Yoga, Mobility & Mental Focus</strong>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">Surya Namaskar, hip decompressions & pranayama breathwork.</p>
+          </div>
+          <div class="goal-option-card" data-goal="Athletic Speed & Agility">
+            <strong style="color: var(--amber-gold);">⚡ Athletic Speed & Agility</strong>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">Footwork, explosive jumps, sprints & rotational core.</p>
+          </div>
+        </div>
+
+        <!-- Weekly Split Title -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <h4 id="routine-split-title" style="font-size: 1.05rem; font-weight: 700; color: #fff;">Weekly Plan</h4>
+          <span class="skill-tag">Tailored for BMI: <strong id="routine-user-bmi">22.6</strong></span>
+        </div>
+
+        <!-- Days Tabs -->
+        <div class="workout-day-tab-list" id="routine-day-tabs">
+          <!-- Injected by app.js -->
+        </div>
+
+        <!-- Exercises List -->
+        <div id="routine-exercises-list">
+          <!-- Injected by app.js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL 2: LEARNING ITEM DETAIL VIEW
+       ========================================================================= -->
+  <div class="modal-backdrop" id="learning-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="learning-modal-title" style="font-size: 1.25rem; font-weight: 800;">Learning Title</h3>
+        <button class="close-modal-btn" onclick="App.closeModals()">✕</button>
+      </div>
+      <div class="modal-body" id="learning-modal-body">
+        <!-- Injected by learning.js -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL 3: OFFICIAL CERTIFICATE VIEWER
+       ========================================================================= -->
+  <div class="modal-backdrop" id="certificate-modal">
+    <div class="modal-box" style="max-width: 680px; text-align: center;">
+      <div class="modal-header">
+        <h3 style="color: var(--amber-gold);">🏆 Verified Achievement Certificate</h3>
+        <button class="close-modal-btn" onclick="App.closeModals()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="padding: 32px 24px; border: 4px double var(--amber-gold); border-radius: var(--radius-md); background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(0,0,0,0.7)); position: relative;">
+          
+          <div style="font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase; color: var(--amber-gold); font-weight: 800; margin-bottom: 8px;">
+            Smart India Hackathon 2026 • Fit India Mission
+          </div>
+
+          <h1 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 12px; color: #fff;">CERTIFICATE OF FITNESS EXCELLENCE</h1>
+          
+          <p style="font-size: 0.95rem; color: var(--text-secondary);">This is proudly presented to</p>
+          <h2 id="cert-user-name" style="font-size: 1.7rem; font-weight: 800; color: var(--neon-green); margin: 10px 0;">Arjun Verma</h2>
+
+          <h3 id="cert-badge-title" style="font-size: 1.2rem; font-weight: 700; color: var(--amber-gold); margin-bottom: 10px;">7-Day Streak Master</h3>
+          <p id="cert-badge-desc" style="font-size: 0.92rem; color: var(--text-primary); max-width: 480px; margin: 0 auto 20px; line-height: 1.5;">
+            In recognition of maintaining unbroken daily fitness missions on Swasthya Sangam.
+          </p>
+
+          <div style="display: flex; justify-content: space-around; margin-top: 30px; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 18px;">
+            <div>
+              <div style="font-family: cursive; font-size: 1.1rem; color: var(--neon-green);">Team Naag Shakti</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary);">SIH Innovation Lead</div>
+            </div>
+            <div>
+              <div style="font-family: cursive; font-size: 1.1rem; color: var(--amber-gold);">Fit India Portal</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary);">Verified Platform Signature</div>
+            </div>
+          </div>
+
+          <div id="cert-date" style="font-size: 0.72rem; color: var(--text-muted); margin-top: 18px;">
+            Issued on: 17 Sep 2026 • Verified by Fit India & SIH 2026
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="window.print()">
+          🖨️ Print / Download Official Certificate
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       MODAL 4: AUTHENTICATION & MULTI-STEP ONBOARDING
+       ========================================================================= -->
+  <div class="auth-overlay active" id="auth-overlay-modal">
+    <div class="auth-card" style="max-width: 540px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <div class="brand-logo-icon" style="margin: 0 auto 10px; width: 48px; height: 48px; font-size: 1.5rem;">⚡</div>
+        <h2 style="font-size: 1.55rem; font-weight: 800;" class="text-gradient">Swasthya Sangam</h2>
+        <p style="font-size: 0.82rem; color: var(--text-secondary);">SIH 2026 • Student Innovation (PS ID 26196)</p>
+      </div>
+
+      <!-- Auth Tabs: Sign Up vs Login -->
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="auth-tab-signup" onclick="AuthModule.switchAuthTab('signup')">Sign Up (New Athlete)</button>
+        <button class="auth-tab-btn" id="auth-tab-login" onclick="AuthModule.switchAuthTab('login')">Log In</button>
+      </div>
+
+      <!-- ==================== SIGNUP FLOW (3 STEPS) ==================== -->
+      <div id="auth-signup-section">
+        <!-- Step Progress Indicator -->
+        <div class="step-indicator-bar">
+          <div class="step-indicator-dot active" id="step-dot-1">1</div>
+          <div class="step-connector"></div>
+          <div class="step-indicator-dot" id="step-dot-2">2</div>
+          <div class="step-connector"></div>
+          <div class="step-indicator-dot" id="step-dot-3">3</div>
+        </div>
+
+        <!-- Step 1: Account Credentials -->
+        <div id="signup-step-1" class="signup-step-page">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--neon-green);">
+            Step 1: Create Student Profile
+          </h4>
+          <form id="auth-form-step1">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="auth-name" class="form-control" placeholder="e.g. Rahul Sharma" value="Rahul Sharma" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">College Email ID</label>
+              <input type="email" id="auth-email" class="form-control" placeholder="rahul@college.ac.in" value="rahul@dtu.ac.in" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Create Password</label>
+              <input type="password" id="auth-password" class="form-control" placeholder="••••••••" value="fitness2026" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 8px;">
+              Next: Physical Metrics & BMI →
+            </button>
+          </form>
+        </div>
+
+        <!-- Step 2: Physical Metrics & BMI -->
+        <div id="signup-step-2" class="signup-step-page" style="display: none;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--electric-cyan);">
+            Step 2: Physiological Profile & Health Metrics
+          </h4>
+          <div id="onboard-live-bmi" style="margin-bottom: 14px; padding: 8px 12px; border-radius: var(--radius-sm); background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); font-size: 0.86rem;">
+            BMI: <strong>22.6</strong> (<span style="color: #22c55e;">Healthy Weight</span>)
+          </div>
+
+          <form id="auth-form-step2">
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+              <div class="form-group">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" id="onboard-dob" class="form-control" value="2004-05-12" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Age (Years)</label>
+                <input type="number" id="onboard-age" class="form-control" value="22" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Weight (kg)</label>
+                <input type="number" id="onboard-weight" class="form-control" value="68" step="0.5" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Height (cm)</label>
+                <input type="number" id="onboard-height" class="form-control" value="175" step="0.5" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Gender</label>
+              <select id="onboard-gender" class="form-control">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+              <button type="button" class="btn btn-secondary" style="padding: 10px 16px;" onclick="AuthModule.goToStep(1)">
+                ← Back
+              </button>
+              <button type="submit" class="btn btn-primary" style="flex: 1; padding: 10px;">
+                Next: Choose Hobbies & Sports →
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 3: Interactive Hobbies & Sports Selection -->
+        <div id="signup-step-3" class="signup-step-page" style="display: none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--amber-gold);">
+              Step 3: Select Your Sports & Hobbies
+            </h4>
+            <span id="selected-skills-count" style="font-size: 0.76rem; color: var(--neon-green); font-weight: 700;">
+              3 selected
+            </span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px;">
+            Tap to select the activities you enjoy or want to learn. We match you with nearby partners based on these:
+          </p>
+
+          <form id="auth-form-step3">
+            <div class="form-group">
+              <label class="form-label">Primary Fitness Goal</label>
+              <select id="onboard-primary-goal" class="form-control" style="margin-bottom: 12px;">
+                <option value="Calisthenics Strength & Core">💪 Calisthenics Strength & Core</option>
+                <option value="Fat Loss & High-Energy HIIT">🔥 Fat Loss & High-Energy HIIT</option>
+                <option value="Yoga, Mobility & Mental Focus">🧘 Yoga, Mobility & Mental Focus</option>
+                <option value="Athletic Speed & Agility">⚡ Athletic Speed & Agility</option>
+              </select>
+            </div>
+
+            <!-- Grouped Skills List -->
+            <div class="skills-multiselect-container" id="onboarding-skills-list" style="max-height: 180px; overflow-y: auto; padding: 10px;">
+              <!-- Injected by auth.js -->
+            </div>
+
+            <!-- Add Custom Skill/Hobby -->
+            <div style="margin-top: 10px;">
+              <label class="form-label" style="font-size: 0.75rem;">+ Add any other sport or activity:</label>
+              <div class="custom-skill-adder">
+                <input type="text" id="custom-skill-input" placeholder="e.g. Parkour, Swimming, Cricket...">
+                <button type="button" class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8rem;" onclick="AuthModule.addCustomSkill()">
+                  + Add
+                </button>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 16px;">
+              <button type="button" class="btn btn-secondary" style="padding: 10px 16px;" onclick="AuthModule.goToStep(2)">
+                ← Back
+              </button>
+              <button type="submit" class="btn btn-primary" style="flex: 1; padding: 12px;">
+                Complete Setup & Launch Dashboard 🚀
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ==================== LOGIN FLOW ==================== -->
+      <div id="auth-login-section" style="display: none;">
+        <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; color: var(--neon-green);">
+          Log In to Your Account
+        </h4>
+        <form id="auth-login-form">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-control" placeholder="name@domain.com" value="arjun.fitness@swasthya.in" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="login-password" class="form-control" placeholder="••••••••" value="swasthya2026" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 6px;">
+            Log In
+          </button>
+        </form>
+
+        <div style="position: relative; text-align: center; margin: 24px 0 16px;">
+          <div style="height: 1px; background: rgba(255, 255, 255, 0.1);"></div>
+          <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: #0e1626; padding: 0 12px; font-size: 0.72rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">
+            OR JURY EVALUATION SHORTCUT
+          </span>
+        </div>
+
+        <button type="button" class="btn btn-cyan" style="width: 100%; padding: 12px;" onclick="AuthModule.quickDemoLogin()">
+          ⚡ 1-Click Jury Demo Login (Arjun Verma - DTU)
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       AI FITNESS COACH FLOATING ACTION BUTTON & WINDOW
+       ========================================================================= -->
+  <div class="ai-bot-fab glow-green" onclick="DashboardModule.toggleAICoachWindow()" title="AI Fitness Coach">
+    🤖
+  </div>
+
+  <div class="ai-bot-window" id="ai-coach-window">
+    <div class="ai-bot-header">
+      <div class="ai-bot-header-left">
+        <div class="ai-bot-avatar">🤖</div>
+        <div>
+          <h4 style="font-size: 0.92rem; font-weight: 700;">Swasthya AI Coach</h4>
+          <span style="font-size: 0.7rem; color: var(--neon-green);">● Active • 24/7 Form & Diet Guide</span>
+        </div>
+      </div>
+      <button class="close-modal-btn" onclick="DashboardModule.toggleAICoachWindow()">✕</button>
+    </div>
+
+    <div class="ai-bot-messages" id="ai-coach-messages-list">
+      <div class="bot-msg">
+        Namaste! I am your <strong>Swasthya AI Fitness Coach</strong>. Ask me anything about bodyweight workout form, pushup progressions, Surya Namaskar, or sports recovery!
+      </div>
+    </div>
+
+    <div class="ai-bot-input-area">
+      <input type="text" id="ai-coach-input" class="ai-bot-input" placeholder="Ask AI coach (e.g. How to do pushups?)...">
+      <button id="ai-coach-send-btn" class="btn btn-primary" style="padding: 8px 14px; font-size: 0.85rem;">
+        Ask
+      </button>
+    </div>
+  </div>
+
+
+  <!-- =========================================================================
+       Scripts Load Order
+       ========================================================================= -->
+  <!-- Leaflet Map API JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- App JS Modules -->
+  <script src="js/data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/routine.js"></script>
+  <script src="js/community.js"></script>
+  <script src="js/learning.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/gemini.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
