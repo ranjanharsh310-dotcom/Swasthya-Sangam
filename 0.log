@@ -1,0 +1,97 @@
+2026-09-19T01:53:45.545Z [INFO] ----------------------invoke appmod-report-event----------------------
+2026-09-19T01:53:45.546Z [INFO] [Tool.invoke]({name: appmod-report-event, modelId: auto, input: {
+  "projectPath": "c:\\Users\\lenovo\\Documents\\Hackathon\\backend",
+  "event": "precheckCompleted",
+  "phase": "precheck",
+  "status": "succeeded",
+  "details": {
+    "components": [
+      {
+        "name": "jdk",
+        "baseVersion": "17",
+        "targetVersion": "25"
+      }
+    ]
+  }
+}}).
+2026-09-19T01:53:45.547Z [INFO] [Tool.invoke] do invoke.
+2026-09-19T01:53:45.549Z [INFO] Project c:\Users\lenovo\Documents\Hackathon\backend is a maven project, try to get java version from pom.xml
+2026-09-19T01:53:45.552Z [INFO] [Tool.invoke]({result: {
+  "message": "Event 'precheckCompleted' reported!\nSession ID: 20260919015345,\nSession Dir: c:\\Users\\lenovo\\Documents\\Hackathon\\backend\\.github\\modernize\\java-upgrade\\20260919015345"
+}}).
+2026-09-19T01:53:45.552Z [INFO] ----------------------invoked appmod-report-event----------------------
+2026-09-19T01:53:45.569Z [INFO] Project java version: 17
+2026-09-19T01:53:45.570Z [INFO] Maven project detected.
+2026-09-19T01:53:45.571Z [INFO] Build tool type: mvn
+2026-09-19T01:53:45.753Z [INFO] JDK: {
+  "name": "java",
+  "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.20.101-hotspot\\bin",
+  "version": "17"
+}
+2026-09-19T01:53:45.762Z [INFO] Build tool: undefined
+2026-09-19T01:53:45.763Z [ERROR] Failed to detect or resolve build tool for the project at c:\Users\lenovo\Documents\Hackathon\backend.
+2026-09-19T01:53:45.763Z [WARN] [ReportEventTool] Full project info unavailable, attempting lightweight fallback: UserError: Failed to detect or resolve build tool for the project at c:\Users\lenovo\Documents\Hackathon\backend. Please ensure the build tool Maven is installed and properly configured on the machine.
+2026-09-19T01:53:45.766Z [INFO] Maven project detected.
+2026-09-19T01:53:45.766Z [INFO] Project c:\Users\lenovo\Documents\Hackathon\backend is a maven project, try to get java version from pom.xml
+2026-09-19T01:53:51.077Z [INFO] ---------------------prepare appmod-report-event----------------------
+2026-09-19T01:53:51.078Z [INFO] [Tool.prepareInvocation]({name: appmod-report-event, input: {
+  "sessionId": "20260919015345",
+  "projectPath": "c:\\Users\\lenovo\\Documents\\Hackathon\\backend",
+  "event": "planGenerationStarted",
+  "phase": "plan",
+  "status": "succeeded"
+}}).
+2026-09-19T01:53:51.078Z [INFO] [Tool.prepareInvocation] do prepare invocation.
+2026-09-19T01:53:51.079Z [INFO] [Tool.prepareInvocation]({result: {
+  "invocationMessage": "Report upgrade event"
+}}).
+2026-09-19T01:53:51.080Z [INFO] ----------------------prepared appmod-report-event----------------------
+2026-09-19T01:53:51.166Z [INFO] ----------------------invoke appmod-report-event----------------------
+2026-09-19T01:53:51.167Z [INFO] [Tool.invoke]({name: appmod-report-event, modelId: auto, input: {
+  "sessionId": "20260919015345",
+  "projectPath": "c:\\Users\\lenovo\\Documents\\Hackathon\\backend",
+  "event": "planGenerationStarted",
+  "phase": "plan",
+  "status": "succeeded"
+}}).
+2026-09-19T01:53:51.167Z [INFO] [Tool.invoke] do invoke.
+2026-09-19T01:53:51.169Z [INFO] [Tool.invoke]({result: {
+  "message": "Event 'planGenerationStarted' reported!\nSession ID: 20260919015345,\nSession Dir: c:\\Users\\lenovo\\Documents\\Hackathon\\backend\\.github\\modernize\\java-upgrade\\20260919015345"
+}}).
+2026-09-19T01:53:51.169Z [INFO] ----------------------invoked appmod-report-event----------------------
+2026-09-19T01:53:51.487Z [INFO] ---------------------prepare appmod-list-jdks----------------------
+2026-09-19T01:53:51.488Z [INFO] [Tool.prepareInvocation]({name: appmod-list-jdks, input: {
+  "sessionId": "20260919015345"
+}}).
+2026-09-19T01:53:51.488Z [INFO] [Tool.prepareInvocation] do prepare invocation.
+2026-09-19T01:53:51.489Z [INFO] [Tool.prepareInvocation]({result: {
+  "invocationMessage": "List jdks"
+}}).
+2026-09-19T01:53:51.489Z [INFO] ----------------------prepared appmod-list-jdks----------------------
+2026-09-19T01:53:51.538Z [INFO] ----------------------invoke appmod-list-jdks----------------------
+2026-09-19T01:53:51.538Z [INFO] [Tool.invoke]({name: appmod-list-jdks, modelId: auto, input: {
+  "sessionId": "20260919015345"
+}}).
+2026-09-19T01:53:51.539Z [INFO] [Tool.invoke] do invoke.
+2026-09-19T01:53:51.556Z [INFO] [Tool.invoke]({result: {
+  "message": "We found following jdks in your system:\n\n1. Java 17.0.20.1\n   📁 Path: C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.20.101-hotspot\\bin\n   🏷️ Source: PATH,JAVA_HOME\n\nTotal: 1 JDK installation(s) found"
+}}).
+2026-09-19T01:53:51.556Z [INFO] ----------------------invoked appmod-list-jdks----------------------
+2026-09-19T01:53:51.577Z [INFO] ---------------------prepare appmod-list-mavens----------------------
+2026-09-19T01:53:51.578Z [INFO] [Tool.prepareInvocation]({name: appmod-list-mavens, input: {
+  "sessionId": "20260919015345"
+}}).
+2026-09-19T01:53:51.578Z [INFO] [Tool.prepareInvocation] do prepare invocation.
+2026-09-19T01:53:51.579Z [INFO] [Tool.prepareInvocation]({result: {
+  "invocationMessage": "List mavens"
+}}).
+2026-09-19T01:53:51.579Z [INFO] ----------------------prepared appmod-list-mavens----------------------
+2026-09-19T01:53:51.627Z [INFO] ----------------------invoke appmod-list-mavens----------------------
+2026-09-19T01:53:51.628Z [INFO] [Tool.invoke]({name: appmod-list-mavens, modelId: auto, input: {
+  "sessionId": "20260919015345"
+}}).
+2026-09-19T01:53:51.628Z [INFO] [Tool.invoke] do invoke.
+2026-09-19T01:53:51.631Z [INFO] [Tool.invoke]({result: {
+  "message": "No Maven installations found."
+}}).
+2026-09-19T01:53:51.632Z [INFO] ----------------------invoked appmod-list-mavens----------------------
